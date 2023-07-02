@@ -1,4 +1,6 @@
+import "dotenv/config";
 import axios from "axios";
+
 class Busquedas {
   historial = ["Tegucigalpa", "Madrid", "Buenos Aires"];
 
@@ -8,8 +10,7 @@ class Busquedas {
 
   get paramsMadbox() {
     return {
-      access_token:
-        "pk.eyJ1IjoiZGF2aWRjYXN0YWduZXRvYSIsImEiOiJjbGprMnNrbDcwZjY1M2RwZDR0bzRodDJ1In0.zAAConVptOSYuvlh56uDDQ",
+      access_token: process.env.MAPBOX_TOKEN,
       limit: 5,
       language: "es",
       proximity: "ip",
@@ -24,8 +25,14 @@ class Busquedas {
         params: this.paramsMadbox,
       });
       const response = await intance.get();
-      console.log(response.data);
-      return [];
+      return response.data.features.map((lugar) => {
+        return {
+          id: lugar.id,
+          nombre: lugar.place_name,
+          longitud: lugar.center[0],
+          latitud: lugar.center[1],
+        };
+      });
     } catch (error) {
       console.log(error);
       return [];

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "colors";
 import inquirer from "inquirer";
 
@@ -9,15 +10,15 @@ const questions = [
     choices: [
       {
         value: 1,
-        name: `${"1.".green} Search city`,
+        name: `${"1.".brightGreen} Search city`,
       },
       {
         value: 2,
-        name: `${"2.".green} History`,
+        name: `${"2.".brightGreen} History`,
       },
       {
         value: 0,
-        name: `${"0.".green} Exit`,
+        name: `${"0.".brightGreen} Exit`,
       },
     ],
   },
@@ -63,12 +64,12 @@ const leerInput = async (message) => {
   return description;
 };
 
-const listadoTareasBorrar = async (tareas = []) => {
-  const choices = tareas.map((tarea, i) => {
+const listadoLugares = async (lugares = []) => {
+  const choices = lugares.map((lugar, i) => {
     const indice = `${i + 1}`.green;
     return {
-      value: tarea.id,
-      name: `${indice}.- ${tarea.description}`,
+      value: lugar.id,
+      name: `${indice}.- ${lugar.nombre}`,
     };
   });
 
@@ -81,7 +82,7 @@ const listadoTareasBorrar = async (tareas = []) => {
     {
       type: "list",
       name: "id",
-      message: "Do you want to delete this task?",
+      message: "Seleccione Lugar",
       choices: choices,
     },
   ];
@@ -144,7 +145,7 @@ const chooseIntruction = async (message) => {
       choices: [
         {
           value: "0",
-          name: `${"1.".green} Cancel`,
+          name: `${"0.".green} Cancel`,
         },
         {
           value: "1",
@@ -161,7 +162,7 @@ export {
   inquirerMenu,
   pause,
   leerInput,
-  listadoTareasBorrar,
+  listadoLugares,
   confirmar,
   mostrarListadoChecklist,
   chooseIntruction,
