@@ -19,6 +19,10 @@ const main = async () => {
   const busquedas = new Busquedas();
   let opt;
 
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   do {
     opt = await inquirerMenu();
     switch (opt) {
@@ -26,32 +30,50 @@ const main = async () => {
         // Mostrar mensaje
         const termino = await leerInput("Ciudad: ");
 
-        // await fetch('https://api.openweathermap.org/data/2.5/weather?q=Ciudad&appid=APIKEY')
-
         // Buscar Lugares
         const lugares = await busquedas.ciudad(termino);
 
         // Seleccionar lugar
         const id = await listadoLugares(lugares);
         const lugarSeleccionado = lugares.find((l) => l.id === id);
+
         // Cancelar Instruccion
         if (id == 0) {
-          break;
+          continue;
         }
 
         // Clima
+        const clima = await busquedas.climaLugar(
+          lugarSeleccionado.latitud,
+          lugarSeleccionado.longitud
+        );
+
+        // Guardar en DB
+        busquedas.agregarHistorial(lugarSeleccionado.nombre);
 
         // Mostrar resultados
         console.log("\nInformacion de la cuidad\n".brightBlue);
-        console.log(`${`Ciudad: `.brightWhite} ${lugarSeleccionado.nombre.brightGreen}`);
+        console.log(`${`Ciudad: `.brightWhite} ${lugarSeleccionado.nombre}`);
         console.log(`${`Latitud: `.brightWhite} ${lugarSeleccionado.latitud.toString().yellow}`);
         console.log(`${`Longitud: `.brightWhite} ${lugarSeleccionado.longitud.toString().yellow}`);
-        console.log(`${`Temperatura: `.brightWhite} ${lugarSeleccionado.temp}`);
-        console.log(`${`Mínima: `.brightWhite} ${lugarSeleccionado.min}`);
-        console.log(`${`Máxima: `.brightWhite} ${lugarSeleccionado.max}`);
+        console.log(
+          `${`Clima: `.brightWhite} ${
+            capitalizeFirstLetter(clima.description.toString()).brightCyan
+          }`
+        );
+        console.log(`${`Temperatura: `.brightWhite} ${clima.average_temp.toString().yellow}`);
+        console.log(`${`Máxima: `.brightWhite} ${clima.max_temp.toString().red}`);
+        console.log(`${`Mínima: `.brightWhite} ${clima.min_temp.toString().cyan}`);
+        console.log(`${`Humedad: `.brightWhite} ${clima.humidity.toString()}\n`);
         break;
+
+      case 2:
+        busquedas.historial.forEach((lugar, i) => {
+          const idx = `${i + 1}.`.brightWhite;
+          console.log(`${idx} ${lugar}`);
+        });
     }
-    console.log({ opt });
+    // console.log({ opt });
 
     if (opt !== 0) await pause();
   } while (opt !== 0);
